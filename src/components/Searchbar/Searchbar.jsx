@@ -6,7 +6,7 @@ export const SearchForm = ({ onFormSubmit }) => {
   };
 
   const handleSubmit = (values, { resetForm }) => {
-    if (values.image === '') {
+    if (values.image.trim() === '') {
       alert('Type anything');
       return;
     }

@@ -1,27 +1,32 @@
 import { Component } from 'react';
 import css from './App.module.css';
 import { SearchForm } from 'components/Searchbar/Searchbar';
+import { ImageGallery } from '../ImageGallery/ImageGallery';
 
-// import { getImages } from '../../services/image-api';
+import { getImages } from '../../services/image-api';
 
 export class App extends Component {
   state = {
     images: [],
-    image: 'cat',
+    image: '',
     isLoading: false,
   };
 
   handleSubmit = data => {
-    console.log(data);
-    this.setState({ image: data.image });
+    const { image } = data;
+    this.setState({ image: image });
+    getImages(image)
+      .then(res => res.json())
+      .then(({ hits }) => {
+        this.setState({ images: hits });
+      });
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState !== this.props.state) {
-      // const data = getImages(this.state.image).then(res =>
-      //   res.json().then(res)
-      // );
-      // this.setState()
+    const image = this.props;
+
+    if (prevState.image !== image) {
+      getImages(image).then(res => res.json().then(res => console.log(res)));
     }
   }
 
@@ -30,6 +35,7 @@ export class App extends Component {
       <div className={css.appWrapper}>
         Images
         <SearchForm onFormSubmit={this.handleSubmit} />
+        <ImageGallery images={this.state.images} />
       </div>
     );
   }
