@@ -10,16 +10,26 @@ export class App extends Component {
     images: [],
     image: '',
     isLoading: false,
+    page: 1,
   };
 
-  handleSubmit = data => {
+  handleSubmit = async data => {
     const { image } = data;
-    this.setState({ image: image });
-    getImages(image)
-      .then(res => res.json())
-      .then(({ hits }) => {
-        this.setState({ images: hits });
-      });
+
+    // await
+    this.setState({ image: image, isLoading: true });
+
+    try {
+      await getImages(image)
+        .then(res => res.json())
+        .then(({ hits }) => {
+          this.setState({ images: hits, page: 1 });
+        });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({ isLoading: false });
+    }
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -33,9 +43,10 @@ export class App extends Component {
   render() {
     return (
       <div className={css.appWrapper}>
-        Images
         <SearchForm onFormSubmit={this.handleSubmit} />
+        {this.state.isLoading && <h2>Loading</h2>}
         <ImageGallery images={this.state.images} />
+        <button type="button">Load more</button>
       </div>
     );
   }
