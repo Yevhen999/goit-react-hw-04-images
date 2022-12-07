@@ -2,11 +2,11 @@ import { Formik, Form, Field } from 'formik';
 
 export const SearchForm = ({ onFormSubmit }) => {
   const initialValues = {
-    image: '',
+    query: '',
   };
 
   const handleSubmit = (values, { resetForm }) => {
-    if (values.image.trim() === '') {
+    if (values.query.trim() === '') {
       alert('Type anything');
       return;
     }
@@ -22,7 +22,7 @@ export const SearchForm = ({ onFormSubmit }) => {
           <button type="submit">
             <span>Search</span>
           </button>
-          <Field type="text" name="image" />
+          <Field type="text" name="query" />
         </Form>
       </Formik>
     </header>

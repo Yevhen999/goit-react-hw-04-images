@@ -3,40 +3,43 @@ import css from './App.module.css';
 import { SearchForm } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 
-import { getImages } from '../../services/image-api';
+import { getImages } from '../../services/query-api';
 
 export class App extends Component {
   state = {
     images: [],
-    image: '',
+    query: '',
     isLoading: false,
     page: 1,
   };
 
-  handleSubmit = async data => {
-    const { image } = data;
-
-    // await
-    this.setState({ image: image, isLoading: true });
-
-    try {
-      await getImages(image)
-        .then(res => res.json())
-        .then(({ hits }) => {
-          this.setState({ images: hits, page: 1 });
-        });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.setState({ isLoading: false });
-    }
+  loadMore = () => {
+    this.setState(prevState => {
+      return { page: prevState.page + 1 };
+    });
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const image = this.props;
+  handleSubmit = data => {
+    const { query } = data;
+    this.setState({ query, page: 1 });
+  };
 
-    if (prevState.image !== image) {
-      getImages(image).then(res => res.json().then(res => console.log(res)));
+  componentDidUpdate(_, prevState) {
+    const { query, page } = this.state;
+
+    if (prevState.query !== query || prevState.page !== page) {
+      this.setState({ isLoading: true });
+      setTimeout(() => {
+        try {
+          getImages(query, page).then(res =>
+            res.json().then(({ hits }) => this.setState({ images: hits }))
+          );
+        } catch (error) {
+          console.log(error);
+        } finally {
+          this.setState({ isLoading: false });
+        }
+      }, 2000);
     }
   }
 
@@ -45,8 +48,10 @@ export class App extends Component {
       <div className={css.appWrapper}>
         <SearchForm onFormSubmit={this.handleSubmit} />
         {this.state.isLoading && <h2>Loading</h2>}
+        <button type="button" onClick={this.loadMore}>
+          Load more
+        </button>
         <ImageGallery images={this.state.images} />
-        <button type="button">Load more</button>
       </div>
     );
   }
