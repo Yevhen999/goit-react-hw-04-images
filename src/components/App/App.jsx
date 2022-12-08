@@ -11,6 +11,9 @@ export class App extends Component {
     query: '',
     isLoading: false,
     page: 1,
+    totalHits: '',
+    error: null,
+    status: 'idle',
   };
 
   loadMore = () => {
@@ -21,7 +24,10 @@ export class App extends Component {
 
   handleSubmit = data => {
     const { query } = data;
-    this.setState({ query, page: 1 });
+    if (query === this.state.query) {
+      return;
+    }
+    this.setState({ query, page: 1, images: [] });
   };
 
   componentDidUpdate(_, prevState) {
@@ -32,26 +38,35 @@ export class App extends Component {
       setTimeout(() => {
         try {
           getImages(query, page).then(res =>
-            res.json().then(({ hits }) => this.setState({ images: hits }))
+            res.json().then(({ hits, totalHits }) => {
+              this.setState(prevState => {
+                return { images: [...prevState.images, ...hits], totalHits };
+              });
+            })
           );
         } catch (error) {
-          console.log(error);
+          this.setState({ error: error.message });
         } finally {
           this.setState({ isLoading: false });
         }
-      }, 2000);
+      }, 0);
     }
   }
 
   render() {
+    const total = this.state.totalHits / 12;
+    const { page } = this.state;
+
     return (
       <div className={css.appWrapper}>
         <SearchForm onFormSubmit={this.handleSubmit} />
-        {this.state.isLoading && <h2>Loading</h2>}
-        <button type="button" onClick={this.loadMore}>
-          Load more
-        </button>
+
         <ImageGallery images={this.state.images} />
+        {!this.state.isLoading && total > page && (
+          <button type="button" onClick={this.loadMore}>
+            Load more
+          </button>
+        )}
       </div>
     );
   }

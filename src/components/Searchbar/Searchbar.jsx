@@ -22,17 +22,14 @@ export const SearchForm = ({ onFormSubmit }) => {
           <button type="submit">
             <span>Search</span>
           </button>
-          <Field type="text" name="query" />
+          <Field
+            type="text"
+            name="query"
+            autoFocus
+            placeholder="Search images and photos"
+          />
         </Form>
       </Formik>
     </header>
   );
 };
-
-// <input
-//   class="input"
-//   type="text"
-//   autocomplete="off"
-//   autofocus
-//   placeholder="Search images and photos"
-// />
