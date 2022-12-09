@@ -14,7 +14,6 @@ export class App extends Component {
     page: 1,
     totalHits: '',
     error: null,
-    status: 'idle',
     showImage: false,
     selectedImage: null,
   };
@@ -23,8 +22,14 @@ export class App extends Component {
     this.setState({ selectedImage: url });
   };
 
+  onCloseEsc = e => {
+    if (e.code === 'Escape') {
+      this.setState({ selectedImage: null });
+    }
+    return;
+  };
+
   closeModal = event => {
-    console.log(event.target.nodeName);
     if (event.target.nodeName !== 'IMG') {
       this.setState({ selectedImage: null });
     }
@@ -44,6 +49,12 @@ export class App extends Component {
     }
     this.setState({ query, page: 1, images: [] });
   };
+
+  // componentDidMount() {
+  //   if (this.selectedImage !== null) {
+  //     window.addEventListener('keyDown', this.onCloseEsc);
+  //   }
+  // }
 
   componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
@@ -87,12 +98,13 @@ export class App extends Component {
             visible={true}
           />
         )}
-        <button type="button" onClick={this.closeModal}>
-          Open
-        </button>
 
         {selectedImage !== null && (
-          <Modal imageUrl={selectedImage} onClick={this.closeModal} />
+          <Modal
+            imageUrl={selectedImage}
+            onClick={this.closeModal}
+            onCloseEsc={this.onCloseEsc}
+          />
         )}
 
         <ImageGallery images={images} onSelect={this.setSelectedImage} />
