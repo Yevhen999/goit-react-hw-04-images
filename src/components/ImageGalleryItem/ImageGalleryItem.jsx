@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import css from './ImageGalleryItem.module.css';
 
 export const ImageGalleryItem = ({
   id,
@@ -7,8 +8,13 @@ export const ImageGalleryItem = ({
   onSelect,
 }) => {
   return (
-    <li key={id} className="gallery-item">
-      <img src={webformatURL} alt="" onClick={() => onSelect(largeImageURL)} />
+    <li key={id} className={css.ImageGalleryItem}>
+      <img
+        className={css.ImageGalleryItemImage}
+        src={webformatURL}
+        alt=""
+        onClick={() => onSelect(largeImageURL)}
+      />
     </li>
   );
 };

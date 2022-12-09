@@ -4,7 +4,7 @@ import { SearchForm } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { getImages } from '../../services/query-api';
 import { Loader } from '../Loader/Loader';
-
+import { ButtonLoadMore } from '../ButtonLoadMore/ButtonLoadMore';
 import { Modal } from '../Modal/Modal';
 
 export class App extends Component {
@@ -15,7 +15,6 @@ export class App extends Component {
     page: 1,
     totalHits: '',
     error: null,
-    showImage: false,
     selectedImage: null,
   };
 
@@ -93,9 +92,7 @@ export class App extends Component {
 
         <ImageGallery images={images} onSelect={this.setSelectedImage} />
         {!isLoading && total > page && (
-          <button type="button" onClick={this.loadMore}>
-            Load more
-          </button>
+          <ButtonLoadMore onClick={this.loadMore} />
         )}
       </div>
     );
