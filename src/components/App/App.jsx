@@ -3,7 +3,8 @@ import css from './App.module.css';
 import { SearchForm } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { getImages } from '../../services/query-api';
-import { ThreeDots } from 'react-loader-spinner';
+import { Loader } from '../Loader/Loader';
+
 import { Modal } from '../Modal/Modal';
 
 export class App extends Component {
@@ -50,12 +51,6 @@ export class App extends Component {
     this.setState({ query, page: 1, images: [] });
   };
 
-  // componentDidMount() {
-  //   if (this.selectedImage !== null) {
-  //     window.addEventListener('keyDown', this.onCloseEsc);
-  //   }
-  // }
-
   componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
 
@@ -86,18 +81,7 @@ export class App extends Component {
     return (
       <div className={css.appWrapper}>
         <SearchForm onFormSubmit={this.handleSubmit} />
-        {isLoading && (
-          <ThreeDots
-            height="80"
-            width="80"
-            radius="9"
-            color="purple"
-            ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClassName=""
-            visible={true}
-          />
-        )}
+        {isLoading && <Loader />}
 
         {selectedImage !== null && (
           <Modal

@@ -21,8 +21,8 @@ export const ImageGallery = ({ images, onSelect }) => {
 
 ImageGallery.propTypes = {
   images: PropTypes.arrayOf(
-    PropTypes.exact({
-      id: PropTypes.string.isRequired,
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
       webformatURL: PropTypes.string.isRequired,
       largeImageURL: PropTypes.string.isRequired,
     })
