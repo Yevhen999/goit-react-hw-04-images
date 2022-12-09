@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export const ImageGalleryItem = ({
   id,
   webformatURL,
@@ -9,4 +11,11 @@ export const ImageGalleryItem = ({
       <img src={webformatURL} alt="" onClick={() => onSelect(largeImageURL)} />
     </li>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  webformatURL: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
+  onSelect: PropTypes.func.isRequired,
 };

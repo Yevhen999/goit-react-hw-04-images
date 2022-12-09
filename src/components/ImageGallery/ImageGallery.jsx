@@ -1,4 +1,5 @@
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+import PropTypes from 'prop-types';
 import css from './ImageGallery.module.css';
 export const ImageGallery = ({ images, onSelect }) => {
   return (
@@ -16,4 +17,15 @@ export const ImageGallery = ({ images, onSelect }) => {
       })}
     </ul>
   );
+};
+
+ImageGallery.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.exact({
+      id: PropTypes.string.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+    })
+  ),
+  onSelect: PropTypes.func.isRequired,
 };
