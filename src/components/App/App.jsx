@@ -55,21 +55,19 @@ export class App extends Component {
 
     if (prevState.query !== query || prevState.page !== page) {
       this.setState({ isLoading: true });
-      setTimeout(() => {
-        try {
-          getImages(query, page).then(res =>
-            res.json().then(({ hits, totalHits }) => {
-              this.setState(prevState => {
-                return { images: [...prevState.images, ...hits], totalHits };
-              });
-            })
-          );
-        } catch (error) {
-          this.setState({ error: error.message });
-        } finally {
-          this.setState({ isLoading: false });
-        }
-      }, 500);
+      try {
+        getImages(query, page).then(res =>
+          res.json().then(({ hits, totalHits }) => {
+            this.setState(prevState => {
+              return { images: [...prevState.images, ...hits], totalHits };
+            });
+          })
+        );
+      } catch (error) {
+        this.setState({ error: error.message });
+      } finally {
+        this.setState({ isLoading: false });
+      }
     }
   }
 
