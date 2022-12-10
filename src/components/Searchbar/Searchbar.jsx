@@ -29,7 +29,7 @@ export const SearchForm = ({ onFormSubmit }) => {
             type="text"
             name="query"
             autoFocus
-            placeholder="Search images and photos"
+            placeholder="🔍Search images and photos"
           />
         </Form>
       </Formik>
