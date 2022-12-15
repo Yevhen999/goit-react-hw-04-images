@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import css from './App.module.css';
 import { SearchForm } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
@@ -7,92 +7,86 @@ import { Loader } from '../Loader/Loader';
 import { ButtonLoadMore } from '../ButtonLoadMore/ButtonLoadMore';
 import { Modal } from '../Modal/Modal';
 
-export class App extends Component {
-  state = {
-    images: [],
-    query: '',
-    isLoading: false,
-    page: 1,
-    totalHits: '',
-    error: null,
-    selectedImage: null,
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalHits, setTotalHits] = useState('');
+  const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const onSetSelectedImage = url => {
+    setSelectedImage(url);
   };
 
-  setSelectedImage = url => {
-    this.setState({ selectedImage: url });
-  };
-
-  onCloseEsc = e => {
+  const onCloseEsc = e => {
     if (e.code === 'Escape') {
-      this.setState({ selectedImage: null });
+      setSelectedImage(null);
     }
     return;
   };
 
-  closeModal = event => {
+  const closeModal = event => {
     if (event.target.nodeName !== 'IMG') {
-      this.setState({ selectedImage: null });
+      setSelectedImage(null);
     }
     return;
   };
 
-  loadMore = () => {
-    this.setState(prevState => {
-      return { page: prevState.page + 1 };
-    });
-  };
-
-  handleSubmit = data => {
-    const { query } = data;
-    if (query === this.state.query) {
+  const handleSubmit = data => {
+    if (data.query === query) {
       return;
     }
-    this.setState({ query, page: 1, images: [] });
+    setQuery(data.query);
+    setPage(1);
+    setImages([]);
   };
 
-  componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-
-    if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ isLoading: true });
-      try {
-        getImages(query, page).then(res =>
-          res.json().then(({ hits, totalHits }) => {
-            this.setState(prevState => {
-              return { images: [...prevState.images, ...hits], totalHits };
-            });
-          })
-        );
-      } catch (error) {
-        this.setState({ error: error.message });
-      } finally {
-        this.setState({ isLoading: false });
-      }
+  useEffect(() => {
+    if (query === '') {
+      return;
     }
-  }
 
-  render() {
-    const { page, isLoading, selectedImage, images, totalHits } = this.state;
-    const total = totalHits / 12;
+    const fetchImages = async () => {
+      try {
+        setIsLoading(true);
+        const { hits, totalHits } = await getImages(query, page);
+        setImages(prevImages => [...prevImages, ...hits]);
+        setTotalHits(totalHits);
+      } catch {
+        setError('Failed to fetch');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchImages();
+  }, [query, page]);
 
-    return (
-      <div className={css.appWrapper}>
-        <SearchForm onFormSubmit={this.handleSubmit} />
-        {isLoading && <Loader />}
+  const loadMore = () => {
+    setPage(page + 1);
+  };
 
-        {selectedImage !== null && (
-          <Modal
-            imageUrl={selectedImage}
-            onClick={this.closeModal}
-            onCloseEsc={this.onCloseEsc}
-          />
-        )}
+  const total = totalHits / 12;
 
-        <ImageGallery images={images} onSelect={this.setSelectedImage} />
-        {!isLoading && total > page && (
-          <ButtonLoadMore onClick={this.loadMore} />
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div className={css.appWrapper}>
+      <SearchForm onFormSubmit={handleSubmit} />
+
+      {error !== null && <h1>{error}</h1>}
+
+      {isLoading && <Loader />}
+
+      {selectedImage !== null && (
+        <Modal
+          imageUrl={selectedImage}
+          onClick={closeModal}
+          onCloseEsc={onCloseEsc}
+        />
+      )}
+
+      <ImageGallery images={images} onSelect={onSetSelectedImage} />
+      {!isLoading && total > page && <ButtonLoadMore onClick={loadMore} />}
+    </div>
+  );
+};
