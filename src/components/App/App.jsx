@@ -41,6 +41,7 @@ export const App = () => {
     setQuery(data.query);
     setPage(1);
     setImages([]);
+    setError(null);
   };
 
   useEffect(() => {
@@ -52,13 +53,17 @@ export const App = () => {
       try {
         setIsLoading(true);
         const data = await getImages(query, page);
-        const newImages = await data.hits.map(
+        const { hits, totalHits } = data;
+        if (hits.length === 0) {
+          return setError('Nothing was found, try again, please');
+        }
+        const newImages = await hits.map(
           ({ id, tags, webformatURL, largeImageURL }) => {
             return { id, tags, webformatURL, largeImageURL };
           }
         );
         setImages(prevImages => [...prevImages, ...newImages]);
-        setTotalHits(data.totalHits);
+        setTotalHits(totalHits);
       } catch {
         setError('Failed to fetch');
       } finally {
@@ -78,7 +83,15 @@ export const App = () => {
     <div className={css.appWrapper}>
       <SearchForm onFormSubmit={handleSubmit} />
 
-      {error !== null && <h1>{error}</h1>}
+      {error !== null && (
+        <h1
+          style={{
+            margin: '0 auto',
+          }}
+        >
+          {error}
+        </h1>
+      )}
 
       {isLoading && <Loader />}
 
@@ -91,7 +104,7 @@ export const App = () => {
       )}
 
       <ImageGallery images={images} onSelect={onSetSelectedImage} />
-      {!isLoading && total > page && <ButtonLoadMore onClick={loadMore} />}
+      {total > page && <ButtonLoadMore onClick={loadMore} />}
     </div>
   );
 };
