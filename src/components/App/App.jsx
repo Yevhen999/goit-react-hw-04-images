@@ -51,9 +51,14 @@ export const App = () => {
     const fetchImages = async () => {
       try {
         setIsLoading(true);
-        const { hits, totalHits } = await getImages(query, page);
-        setImages(prevImages => [...prevImages, ...hits]);
-        setTotalHits(totalHits);
+        const data = await getImages(query, page);
+        const newImages = await data.hits.map(
+          ({ id, tags, webformatURL, largeImageURL }) => {
+            return { id, tags, webformatURL, largeImageURL };
+          }
+        );
+        setImages(prevImages => [...prevImages, ...newImages]);
+        setTotalHits(data.totalHits);
       } catch {
         setError('Failed to fetch');
       } finally {

@@ -4,6 +4,5 @@ export async function getImages(tag, number) {
   const response = await fetch(
     `https://pixabay.com/api/?q=${tag}&page=${number}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
   );
-  const data = await response.json();
-  return data;
+  return response.json();
 }
