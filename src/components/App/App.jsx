@@ -52,10 +52,13 @@ export const App = () => {
     const fetchImages = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await getImages(query, page);
         const { hits, totalHits } = data;
         if (hits.length === 0) {
-          return setError('Nothing was found, try again, please');
+          setError('Nothing was found, try again, please');
+          setTotalHits('');
+          return;
         }
         const newImages = await hits.map(
           ({ id, tags, webformatURL, largeImageURL }) => {
@@ -66,6 +69,7 @@ export const App = () => {
         setTotalHits(totalHits);
       } catch {
         setError('Failed to fetch');
+        setTotalHits('');
       } finally {
         setIsLoading(false);
       }
@@ -74,7 +78,7 @@ export const App = () => {
   }, [query, page]);
 
   const loadMore = () => {
-    setPage(page + 1);
+    setPage(prevState => prevState + 1);
   };
 
   const total = totalHits / 12;
