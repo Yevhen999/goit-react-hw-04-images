@@ -56,8 +56,8 @@ export const App = () => {
         const data = await getImages(query, page);
         const { hits, totalHits } = data;
         if (hits.length === 0) {
-          setError('Nothing was found, try again, please');
           setTotalHits('');
+          setError('Nothing was found, try again, please');
           return;
         }
         const newImages = await hits.map(
